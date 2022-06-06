@@ -9,6 +9,8 @@ using Zenject;
 [RequireComponent(typeof(Canvas))]
 public class LevelFinishedScreen : MonoBehaviour
 {
+    public Button nextLevelButton;
+    
     [SerializeField] private LeaderboardView leaderboardView;
     
     [Inject] private SignalBus _bus;
@@ -33,5 +35,9 @@ public class LevelFinishedScreen : MonoBehaviour
     public void Close() => _canvas.enabled = false;
 
 
-    private void OnRestart() => Close();
+    private void OnRestart(RestartLevelSignal signal)
+    {
+        if (signal.IsFromBottomCollider) return;
+        Close();
+    }
 }

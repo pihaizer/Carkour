@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Timers;
+using Cinemachine;
 using Signals;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class LevelController : MonoBehaviour
     [SerializeField] private CarController carController;
     [SerializeField] private LevelGoal levelGoal;
     [SerializeField] private GameInfoSO gameInfoSO;
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
     [Inject] private SignalBus _bus;
     [Inject] private PlayerInput _input;
@@ -26,10 +28,12 @@ public class LevelController : MonoBehaviour
         ResetLevel();
         levelGoal.Reached += OnLevelGoalReached;
         _bus.Subscribe<RestartLevelSignal>(OnRestartRequested);
+        virtualCamera.Follow = virtualCamera.LookAt = carController.transform;
     }
 
-    private void OnRestartRequested()
+    private void OnRestartRequested(RestartLevelSignal signal)
     {
+        if (signal.IsFromBottomCollider && _isFinished) return;
         ResetLevel();
     }
 

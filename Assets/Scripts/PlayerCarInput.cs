@@ -29,5 +29,7 @@ public class PlayerCarInput : MonoBehaviour
         
         target.SetAcceleration(_input.Vertical);
         target.SetBreaks(_input.Breaks);
+        
+        target.AddRotation(_input.Rotation);
     }
 }

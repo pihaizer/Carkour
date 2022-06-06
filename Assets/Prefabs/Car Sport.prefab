@@ -267,6 +267,8 @@ MonoBehaviour:
   breakMaxTorque: 1000
   torqueLoseSpeed: 12
   topSpeed: 20
+  flyingTorque: {x: 5, y: 0, z: -5}
+  maxApplicableFlyingVelocity: {x: 2, y: 0, z: 2}
 --- !u!54 &4871055239495903571
 Rigidbody:
   m_ObjectHideFlags: 0

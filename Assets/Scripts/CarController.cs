@@ -22,6 +22,9 @@ public class CarController : MonoBehaviour
     [SerializeField] private float torqueLoseSpeed;
     [SerializeField] private float topSpeed;
 
+    [SerializeField] private Vector3 flyingTorque;
+    [SerializeField] private Vector3 maxApplicableFlyingVelocity;
+
 
     private void Start()
     {
@@ -48,12 +51,19 @@ public class CarController : MonoBehaviour
         float speedLossFactor = (moveSpeed - torqueLoseSpeed) / (topSpeed - torqueLoseSpeed);
         float torque = Mathf.Lerp(0, motorMaxTorque, 1 - speedLossFactor);
 
-
         foreach (var axis in from axis in wheelAxes where axis.isDrive select axis)
         {
             axis.leftWheelCollider.motorTorque = value * torque;
             axis.rightWheelCollider.motorTorque = value * torque;
         }
+    }
+
+    public void AddRotation(Vector2 value)
+    {
+        if (IsGrounded()) return;
+        float xTorque = flyingTorque.x * value.y;
+        float yTorque = flyingTorque.z * value.x;
+        rigidbody.AddRelativeTorque(xTorque, 0, yTorque, ForceMode.Acceleration);
     }
 
     public void SetBreaks(bool value)
@@ -87,6 +97,14 @@ public class CarController : MonoBehaviour
     {
         return transform.InverseTransformVector(rigidbody.velocity);
     }
+    
+    public Vector3 GetRotationSpeed()
+    {
+        return transform.InverseTransformVector(rigidbody.angularVelocity);
+    }
+
+    private bool IsGrounded() =>
+        wheelAxes.Any(axis => axis.leftWheelCollider.isGrounded || axis.rightWheelCollider.isGrounded);
 
     private void UpdateAllWheelGraphics()
     {

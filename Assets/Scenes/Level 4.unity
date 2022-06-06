@@ -2332,11 +2332,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfa98f0ccaf97e744a809339327bd484, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelConfig: {fileID: 11400000, guid: bd5fe04daa46d0642afc859626f0c4cb, type: 2}
+  levelConfig: {fileID: 11400000, guid: 24456bd39a07ba44fbedfcc22b3e18d2, type: 2}
   startPoint: {fileID: 1796050561}
   carController: {fileID: 909860779}
   levelGoal: {fileID: 720254905}
   gameInfoSO: {fileID: 11400000, guid: 3fd77b8f154d8804681e95d2c1cb71da, type: 2}
+  virtualCamera: {fileID: 1567258030}
 --- !u!114 &530443335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13073,7 +13074,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1567258029}
-  m_LocalRotation: {x: 0.047936995, y: 0.000000017365046, z: -8.3338625e-10, w: 0.9988504}
+  m_LocalRotation: {x: 0.047937024, y: 0.00000001709772, z: -8.2055723e-10, w: 0.9988504}
   m_LocalPosition: {x: -1.57, y: 1.769, z: -42.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private LevelSelectionScreen levelSelectionCanvas;
     [SerializeField] private LevelFinishedScreen levelFinishedScreen;
 
+
     [SerializeField] private List<LevelConfig> levelConfigs;
 
     [Inject] private SignalBus _bus;
@@ -31,7 +32,7 @@ public class GameController : MonoBehaviour
     {
         _bus.Subscribe<LevelFinishedSignal>(OnLevelFinished);
         _bus.Subscribe<ExitLevelSignal>(OnExitLevelSignal);
-        
+
         usernameInputScreen.Submitted += OnUsernameSubmitted;
     }
 
@@ -47,6 +48,7 @@ public class GameController : MonoBehaviour
 
             _playerName = username;
             usernameInputScreen.Close();
+            mainMenuCanvas.enabled = true;
         });
     }
 
@@ -85,9 +87,11 @@ public class GameController : MonoBehaviour
         _loadedLevel = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
         SceneManager.SetActiveScene(_loadedLevel);
         gameCanvas.enabled = true;
+        levelFinishedScreen.nextLevelButton.gameObject.SetActive(levelConfigs.Exists(config =>
+            config.levelNumber == _loadedLevelConfig.levelNumber + 1));
     }
 
-    public void RequestRestart() => _bus.Fire<RestartLevelSignal>();
+    public void RequestRestart(bool fromBoxCollider) => _bus.Fire(new RestartLevelSignal(fromBoxCollider));
 
     public void RequestExit() => _bus.Fire<ExitLevelSignal>();
 
@@ -123,7 +127,7 @@ public class GameController : MonoBehaviour
             }
 
             _playerName = response.name;
-            if (_playerName == null) RequestEnterUsername();
+            if (string.IsNullOrEmpty(_playerName)) RequestEnterUsername();
         });
     }
 

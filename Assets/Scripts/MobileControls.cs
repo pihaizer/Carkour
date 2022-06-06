@@ -6,6 +6,7 @@ using Zenject;
 public class MobileControls : MonoBehaviour
 {
     [SerializeField] private Joystick joystick;
+    [SerializeField] private Joystick rightJoystick;
     [SerializeField] private HoldButton breaksButton;
 
     [Inject] private PlayerInput _input;
@@ -13,6 +14,7 @@ public class MobileControls : MonoBehaviour
     private void Update()
     {
         _input.SetJoystickDirection(joystick.Direction);
+        _input.SetFlyingJoystickDirection(rightJoystick.Direction);
         _input.SetBreaksButton(breaksButton.IsDown);
     }
 }
