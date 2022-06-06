@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace;
 using LootLocker.Requests;
 using Signals;
 using UnityEngine;
@@ -11,12 +12,15 @@ public class GameController : MonoBehaviour
     [SerializeField] private Canvas gameCanvas;
     [SerializeField] private Canvas mainMenuCanvas;
     [SerializeField] private Canvas optionsCanvas;
+    [SerializeField] private UsernameInputScreen usernameInputScreen;
     [SerializeField] private LevelSelectionScreen levelSelectionCanvas;
     [SerializeField] private LevelFinishedScreen levelFinishedScreen;
 
     [SerializeField] private List<LevelConfig> levelConfigs;
 
     [Inject] private SignalBus _bus;
+
+    private const string _usernameKey = "username";
 
     private int _playerId;
     private string _playerName;
@@ -27,6 +31,23 @@ public class GameController : MonoBehaviour
     {
         _bus.Subscribe<LevelFinishedSignal>(OnLevelFinished);
         _bus.Subscribe<ExitLevelSignal>(OnExitLevelSignal);
+        
+        usernameInputScreen.Submitted += OnUsernameSubmitted;
+    }
+
+    private void OnUsernameSubmitted(string username)
+    {
+        LootLockerSDKManager.SetPlayerName(username, response =>
+        {
+            if (!response.success)
+            {
+                usernameInputScreen.SetError(response.Error);
+                return;
+            }
+
+            _playerName = username;
+            usernameInputScreen.Close();
+        });
     }
 
     private void Start()
@@ -102,7 +123,13 @@ public class GameController : MonoBehaviour
             }
 
             _playerName = response.name;
+            if (_playerName == null) RequestEnterUsername();
         });
+    }
+
+    private void RequestEnterUsername()
+    {
+        usernameInputScreen.Open();
     }
 
     private void OnLevelFinished(LevelFinishedSignal signal)
@@ -144,5 +171,6 @@ public class GameController : MonoBehaviour
         optionsCanvas.enabled = false;
         levelSelectionCanvas.Close();
         levelFinishedScreen.Close();
+        usernameInputScreen.Close();
     }
 }
