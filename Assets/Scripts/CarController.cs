@@ -25,6 +25,8 @@ public class CarController : MonoBehaviour
     [SerializeField] private Vector3 flyingTorque;
     [SerializeField] private Vector3 maxApplicableFlyingVelocity;
 
+    private bool _inputBlocked = false;
+
 
     private void Start()
     {
@@ -36,8 +38,21 @@ public class CarController : MonoBehaviour
         UpdateAllWheelGraphics();
     }
 
+    public void SetInputBlocked(bool value)
+    {
+        if (value)
+        {
+            SetBreaks(false);
+            SetSteering(0);
+            SetAcceleration(0); 
+        }
+        
+        _inputBlocked = value;
+    }
+
     public void SetSteering(float value)
     {
+        if (_inputBlocked) return;
         foreach (var axis in from axis in wheelAxes where axis.isSteering select axis)
         {
             axis.leftWheelCollider.steerAngle = value * maxSteeringAngle;
@@ -47,6 +62,7 @@ public class CarController : MonoBehaviour
 
     public void SetAcceleration(float value)
     {
+        if (_inputBlocked) return;
         float moveSpeed = GetMoveSpeed().magnitude;
         float speedLossFactor = (moveSpeed - torqueLoseSpeed) / (topSpeed - torqueLoseSpeed);
         float torque = Mathf.Lerp(0, motorMaxTorque, 1 - speedLossFactor);
@@ -60,6 +76,7 @@ public class CarController : MonoBehaviour
 
     public void AddRotation(Vector2 value)
     {
+        if (_inputBlocked) return;
         if (IsGrounded()) return;
         float xTorque = flyingTorque.x * value.y;
         float yTorque = flyingTorque.z * value.x;
@@ -68,6 +85,7 @@ public class CarController : MonoBehaviour
 
     public void SetBreaks(bool value)
     {
+        if (_inputBlocked) return;
         foreach (var axis in from axis in wheelAxes where axis.hasBrakes select axis)
         {
             axis.leftWheelCollider.brakeTorque = value ? breakMaxTorque : 0;

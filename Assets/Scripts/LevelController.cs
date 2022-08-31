@@ -22,6 +22,7 @@ public class LevelController : MonoBehaviour
 
     private bool _isStarted = false;
     private bool _isFinished = false;
+    private bool _isRestarting = false;
 
     private void Awake()
     {
@@ -33,13 +34,29 @@ public class LevelController : MonoBehaviour
 
     private void OnRestartRequested(RestartLevelSignal signal)
     {
+        if (_isRestarting) return;
         if (signal.IsFromBottomCollider && _isFinished) return;
+        StartCoroutine(RestartCoroutine());
+    }
+
+    private IEnumerator RestartCoroutine()
+    {
+        _isRestarting = true;
+        if (carController.TryGetComponent(out CarDissolveController dissolveController))
+        {
+            carController.SetInputBlocked(true);
+            dissolveController.AnimateDissolve(true);
+            yield return new WaitForSeconds(dissolveController.DissolveTime);
+            dissolveController.AnimateDissolve(false);
+        }
+
         ResetLevel();
+        _isRestarting = false;
     }
 
     private void OnLevelGoalReached()
     {
-        if (_isFinished) return;
+        if (_isRestarting || _isFinished) return;
         FinishLevel();
     }
 
@@ -74,6 +91,7 @@ public class LevelController : MonoBehaviour
         _isStarted = false;
         _isFinished = false;
         gameInfoSO.timer.Value = 0;
+        carController.SetInputBlocked(false);
         ResetCarPosition();
     }
 
